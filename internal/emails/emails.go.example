@@ -1,0 +1,32 @@
+package emails
+
+// consts used for smtp server configuration when sending the emails using gmail and SMTP
+const (
+	// SMTPHost is the SMTP host
+	SMTPHost = "smtp.gmail.com"
+
+	// SMTPHost is the SMTP port
+	SMTPPort = "587"
+
+	// SMTPAddr is the SMTP address which is constructed with the host and port delimited by a colon
+	SMTPAddr = SMTPHost + ":" + SMTPPort
+)
+
+var (
+	// SenderName represents the name of the sender
+	SenderName     = "Le Père Noël"
+
+	// SenderEmail represents the email address of the sender
+	SenderEmail    = "somemailaccountthatwillsendthesecretsantaemails@gmail.com"
+
+	// SenderPassword represents the password for the email address of the sender
+	SenderPassword = "the password to the email account in the line above -- do not commit the password by accident!"
+)
+
+// ParticipantMap represents the participants' names and emails
+var ParticipantMap = map[string]string{
+	"Participant Name 1": "participantname1@email.ca",
+	"Participant Name 2": "participantname2@email.ca",
+	"Participant Name 3": "participantname3@email.ca",
+	...
+}
