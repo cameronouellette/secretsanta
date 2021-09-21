@@ -104,7 +104,7 @@ func selectSecretSantas(participants, secretSantas []Participant) bool {
 	for _, secretSanta := range secretSantas {
 
 		// choose the participant that secretSanta will be shopping for
-		participant := selectParticipant(participants, secretSanta)
+		participant := selectParticipant(&participants, secretSanta)
 
 		// if participant is empty then not everyone was matched so return false
 		if (participant == Participant{}) {
@@ -132,18 +132,18 @@ func constructMessage(sender Sender, participant Participant, subject, body stri
 	return
 }
 
-func shuffleParticipants(participants []Participant) {
+func shuffleParticipants(participants *[]Participant) {
 	rand.Seed(time.Now().UnixNano())
-	rand.Shuffle(len(participants), func(i, j int) { participants[i], participants[j] = participants[j], participants[i] })
+	rand.Shuffle(len(*participants), func(i, j int) { (*participants)[i], (*participants)[j] = (*participants)[j], (*participants)[i] })
 }
 
-func selectParticipant(participants []Participant, secretSanta Participant) (selectedParticipant Participant) {
+func selectParticipant(participants *[]Participant, secretSanta Participant) (selectedParticipant Participant) {
 
 	// shuffle list of participants before looping through the participants -- this will increase the chances that everyone has a partner in the end
 	shuffleParticipants(participants)
 
 	// cycle through the list of shuffled participants and select the first one that's allowed
-	for i, participant := range participants {
+	for i, participant := range *participants {
 
 		// cannot be your own secret santa
 		if participant == secretSanta {
@@ -163,7 +163,7 @@ func selectParticipant(participants []Participant, secretSanta Participant) (sel
 		// select this participant and then remove them from the selection pool (their name has been drawn from the metaphorical hat, if you will)
 		selectedParticipant = participant
 
-		participants = append(participants[:i], participants[i+1:]...)
+		(*participants) = append((*participants)[:i], (*participants)[i+1:]...)
 		break
 	}
 
