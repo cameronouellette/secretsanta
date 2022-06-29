@@ -30,4 +30,4 @@ The application has a hardcoded `participantBlockList` in `main.go`. This can be
 ## Reading the master list when someone forgets who they selected
 
 1. From the root directory of the repo run `cd read`.
-2. Run `go run read.go <insert_name_here>`.
+2. Run `go run read.go <insert_name_of_person_who_forgot_here>`.
