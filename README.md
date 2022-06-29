@@ -19,10 +19,10 @@ Run `go run main.go` from the root directory of the repo to run the selection pr
 
 ### Flags  
 
-| flag | type | description |  
-| ---- | ---- | ----------- |  
-| `-debug` | bool | Performs a dry-run of the program. The emails to be sent will be printed to stdout as well as the master list of secret santa selections |  
-| `-attempt` | int | Denotes the attempt number in the master list, the email subject line and the email message body. Defaults to 1. |
+| flag | type | default | description |  
+| ---- | ---- | ------- | ----------- |  
+| `-debug` | bool | false | Performs a dry-run of the program. The emails to be sent will be printed to stdout as well as the master list of secret santa selections |  
+| `-attempt` | int | 1 | Denotes the attempt number in the master list, the email subject line and the email message body |
 
 ### Blocklist
 The application has a hardcoded `participantBlockList` in `main.go`. This can be used to enforce rules such as blocking couples from picking each other or blocking everyone from picking the same person as last year.
