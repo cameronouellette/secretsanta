@@ -124,6 +124,16 @@ func main() {
 	}
 }
 
+func constructMessage(sender Sender, participant Participant, subject, body string) (message string) {
+	// construct SMTP formatted message
+	message = "From:" + sender.GetName() + "\n" +
+		"To:" + participant.GetEmail() + "\n" +
+		"Subject:" + subject + "\n\n" +
+		body
+
+	return
+}
+
 // returns true if everyone is matched, false otherwise
 func selectSecretSantas(participants, secretSantas []Participant) bool {
 
@@ -147,16 +157,6 @@ func selectSecretSantas(participants, secretSantas []Participant) bool {
 	}
 
 	return true
-}
-
-func constructMessage(sender Sender, participant Participant, subject, body string) (message string) {
-	// construct SMTP formatted message
-	message = "From:" + sender.GetName() + "\n" +
-		"To:" + participant.GetEmail() + "\n" +
-		"Subject:" + subject + "\n\n" +
-		body
-
-	return
 }
 
 func shuffleParticipants(participants *[]Participant) {
