@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/base64"
+	"flag"
 	"fmt"
 	"log"
 	"math/rand"
@@ -17,7 +18,7 @@ import (
 
 const (
 	// e-mail subject line
-	subject = "Le Père Noël secret!"
+	subjectPreface = "Le Père Noël secret!"
 
 	// master list file name
 	masterListFilePath = "secret-santa-master-list.txt"
@@ -46,7 +47,13 @@ var sender = NewSender(SenderName, SenderEmail, SenderPassword)
 // SMTP authentication
 var auth = smtp.PlainAuth("", sender.GetEmail(), sender.GetPassword(), SMTPHost)
 
+var debug *bool
+var attempt *int
+
 func main() {
+	debug = flag.Bool("debug", false, "perform a dry-run of the program where no emails are sent and the master list is printed to stdout")
+	attempt = flag.Int("attempt", 1, "re-run the secret-santa selection")
+	flag.Parse()
 
 	for {
 		// construct a list of participants based on the map of names to emails -- this list will represent the metaphorical names in the metaphorical hat
@@ -65,8 +72,10 @@ func main() {
 		fmt.Printf("\n\n\n SOMEONE ENDED UP WITHOUT A PARTNER, TRYING AGAIN \n\n\n")
 	}
 
-	// UNCOMMENT for debugging :)
-	// prettyPrintMasterList()
+	// print master list if program is run in debug mode
+	if *debug {
+		prettyPrintMasterList()
+	}
 
 	writeMasterListToFile()
 
@@ -74,26 +83,39 @@ func main() {
 	for participant, secretSanta := range masterListOfSecretSantaSelections {
 
 		// construct the message body
-		body := fmt.Sprintf("Hi %s!\n\n\n"+
-			"This Christmas you will be %s's Secret Santa! :)\n\n"+
+		body := fmt.Sprintf("Hi %s!\n\n\n", secretSanta.GetName())
+
+		if *attempt > 1 {
+			body += fmt.Sprintf("Please ignore the last selection -- it turns out that someone picked someone they weren't supposed to! Time for attempt #%d :P\n\n\n", *attempt)
+		}
+
+		body += fmt.Sprintf("This Christmas you will be %s's Secret Santa! :)\n\n"+
 			"The spending limit this year is 30$ before tax. Have fun shopping!\n\n\n"+
 			"Joyeux Noël!\n"+
 			"Le Père Noël",
-			secretSanta.GetName(),
 			participant.GetName())
 
 		// contruct the message with headers and body included
+		subject := subjectPreface
+		if *attempt > 1 {
+			subject += fmt.Sprintf(" Tentative #%d", *attempt)
+		}
 		message := constructMessage(sender, secretSanta, subject, body)
 
-		// send the message
-		fmt.Printf("\n\nSending secret santa e-mail message to %s\n", secretSanta.GetName())
-		// UNCOMMENT FOR DEBUGGING
-		// fmt.Printf("-------------------------------\n%s\n-------------------------------\n", message)
-		err := smtp.SendMail(SMTPAddr, auth, sender.GetEmail(), []string{secretSanta.GetEmail()}, []byte(message))
-		if err != nil {
-			fmt.Println("Message failed to send to ", secretSanta.GetName(), ". Error: ", err)
+		// do not send emails if program is run in debug mode, but rather print them to stdout
+		if *debug {
+			fmt.Printf("-------------------------------\n%s\n-------------------------------\n", message)
+		} else {
+			// send the message
+			fmt.Printf("\n\nSending secret santa e-mail message to %s\n", secretSanta.GetName())
+
+			err := smtp.SendMail(SMTPAddr, auth, sender.GetEmail(), []string{secretSanta.GetEmail()}, []byte(message))
+			if err != nil {
+				fmt.Println("Message failed to send to ", secretSanta.GetName(), ". Error: ", err)
+			}
+
+			fmt.Println("E-mail sent successfully to", secretSanta.GetName(), "!")
 		}
-		fmt.Println("E-mail sent successfully to", secretSanta.GetName(), "!")
 	}
 }
 
@@ -217,10 +239,11 @@ func writeMasterListToFile() {
 	}
 }
 
-func constructMasterListPrettyPrintString() (prettyPrintString string) {
+func constructMasterListPrettyPrintString() string {
+	prettyPrintString := fmt.Sprintf("Attempt #%d\n", *attempt)
 	for participant, secretSanta := range masterListOfSecretSantaSelections {
 		prettyPrintString += secretSanta.GetName() + "," + secretSanta.GetEmail() + " : " + participant.GetName() + "," + participant.GetEmail() + "\n"
 	}
 
-	return
+	return prettyPrintString
 }
