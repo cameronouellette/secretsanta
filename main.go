@@ -31,6 +31,8 @@ var masterListOfSecretSantaSelections = make(map[Participant]Participant)
 // participantBlockList is used to block participants from getting each other.
 // - couples are hard-coded to start, but this map may be used dynamically to enforce different rules if desired (e.g. two people cannot be each other's secret santa)
 var participantBlockList = map[string][]string{
+
+	// --------------- couples ---------------
 	"Martine": {"Cameron"},
 	"Cameron": {"Martine"},
 
@@ -39,6 +41,9 @@ var participantBlockList = map[string][]string{
 
 	"Annick": {"Phil"},
 	"Phil":   {"Annick"},
+
+	// ------ previous year's selections ------
+
 }
 
 // sender contains the information of the email account that will be sending the secret sender selections
